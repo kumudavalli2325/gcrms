@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    {% load static %}
+
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h3.form-title {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Table Layout */
+        table.form-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.form-table td {
+            padding: 10px;
+            vertical-align: middle;
+        }
+
+        table.form-table td label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        table.form-table input, table.form-table select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        table.form-table input:focus, table.form-table select:focus {
+            outline: none;
+            border-color: #66afe9;
+            box-shadow: 0 0 8px rgba(0, 0, 255, 0.2);
+        }
+
+        /* Button */
+        button.btn-primary {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button.btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        /* Password Strength Error */
+        #password-error {
+            color: red;
+            display: none;
+            margin-top: 10px;
+        }
+
+        #password-error li {
+            margin: 5px 0;
+        }
+
+        /* Email Validation Error */
+        #email-error {
+            color: red;
+            display: none;
+            margin-top: 10px;
+        }
+
+        /* Checkbox Layout */
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Space between checkboxes */
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            margin-right: 5px; /* Space between checkbox and label */
+        }
+    </style>
+
+    <script>
+        // Password confirmation validation and password strength validation
+        function validatePasswords() {
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirm_password").value;
+            var passwordError = document.getElementById("password-error");
+            var passwordMatchError = document.getElementById("password-match-error");
+            var passwordValid = true;
+            var errors = [];
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                passwordMatchError.style.display = "block";
+                passwordMatchError.innerHTML = "Passwords do not match!";
+                passwordValid = false;
+            } else {
+                passwordMatchError.style.display = "none";
+            }
+
+            // Check password strength
+            var passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordPattern.test(password)) {
+                errors.push("Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a digit, and a special character.");
+                passwordValid = false;
+            }
+
+            if (!passwordValid) {
+                passwordError.style.display = "block";
+                passwordError.innerHTML = "<ul>" + errors.map(function(error) {
+                    return "<li>" + error + "</li>";
+                }).join("") + "</ul>";
+            } else {
+                passwordError.style.display = "none";
+            }
+
+            return passwordValid;
+        }
+
+        // Email validation to ensure it ends with klu.in
+        function validateEmail() {
+            var email = document.getElementById("mail_id").value;
+            var emailError = document.getElementById("email-error");
+            var emailValid = true;
+
+            // Regular expression to check if email ends with klu.in
+            var emailPattern = /^[a-zA-Z0-9._%+-]+@klu\.in$/;
+
+            if (!emailPattern.test(email)) {
+                emailValid = false;
+                emailError.style.display = "block";
+                emailError.innerHTML = "Please enter a valid email ending with @klu.in";
+            } else {
+                emailError.style.display = "none";
+            }
+
+            return emailValid;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h3 class="form-title">Enter Details</h3>
+        <form method="POST" class="post-form" action="/emp" onsubmit="return validatePasswords() && validateEmail()">
+            {% csrf_token %}
+            <table class="form-table">
+                <tr>
+                    <td><label for="id">Employee ID (Auto-generated):</label></td>
+                    <td>{{ form.id }}</td>
+                </tr>
+                <tr>
+                    <td><label for="username">Username:</label></td>
+                    <td>{{ form.username }}</td>
+                </tr>
+                <tr>
+                    <td><label for="password">User Password:</label></td>
+                    <td><input type="password" name="password" id="password" required maxlength="100" /></td>
+                </tr>
+                <tr>
+                    <td><label for="confirm_password">User Confirm Password:</label></td>
+                    <td><input type="password" name="confirm_password" id="confirm_password" required maxlength="100" /></td>
+                </tr>
+                <tr>
+                    <td><label for="mail_id">User Email:</label></td>
+                    <td><input type="email" name="mail_id" id="mail_id" required maxlength="100" onblur="validateEmail()" /></td>
+                </tr>
+                <tr>
+                    <td><label for="first_name">User First Name:</label></td>
+                    <td>{{ form.first_name }}</td>
+                </tr>
+                <tr>
+                    <td><label for="last_name">User Last Name:</label></td>
+                    <td>{{ form.last_name }}</td>
+                </tr>
+                <tr>
+                    <td><label for="phone_number">User Contact:</label></td>
+                    <td>{{ form.phone_number }}</td>
+                </tr>
+                <tr>
+                    <td><label for="id_role">Role:</label></td>
+                    <td>
+                        <div class="checkbox-wrapper">
+                            <label><input type="checkbox" name="role" value="Admin" {% if 'Admin' in user.roles %}checked{% endif %}> Admin</label>
+                            <label><input type="checkbox" name="role" value="User" {% if 'User' in user.roles %}checked{% endif %}> User</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button type="submit" class="btn btn-primary">Submit</button></td>
+                </tr>
+            </table>
+            <div id="password-error"></div>
+            <div id="password-match-error" style="color: red; display: none;"></div>
+            <div id="email-error"></div>
+        </form>
+    </div>
+</body>
+</html>

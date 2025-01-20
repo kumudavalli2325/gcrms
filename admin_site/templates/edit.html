@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+    {% load static %}
+
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h3.form-title {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Table Layout */
+        table.form-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.form-table td {
+            padding: 10px;
+            vertical-align: middle;
+        }
+
+        table.form-table td label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        table.form-table input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        table.form-table input:focus {
+            outline: none;
+            border-color: #66afe9;
+            box-shadow: 0 0 8px rgba(0, 0, 255, 0.2);
+        }
+
+        /* Button */
+        button.btn-success {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button.btn-success:hover {
+            background-color: #45a049;
+        }
+
+        /* Checkbox Layout */
+        .checkbox-wrapper {
+            display: flex;
+            gap: 20px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3 class="form-title">Update Details</h3>
+        <form method="POST" class="post-form" action="/update/{{ user.id }}">
+            {% csrf_token %}
+            <table class="form-table">
+                <tr>
+                    <td><label for="id_username">Username:</label></td>
+                    <td><input type="text" name="username" id="id_username" required maxlength="100" value="{{ user.username }}" /></td>
+                </tr>
+                <tr>
+                    <td><label for="id_password">User Password:</label></td>
+                    <td><input type="password" name="password" id="id_password" required maxlength="100" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" title="Password must be at least 8 characters long, include 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character." value="{{ user.password }}" /></td>
+                </tr>
+                <tr>
+                    <td><label for="id_confirm_password">User Confirm Password:</label></td>
+                    <td><input type="password" name="confirm_password" id="id_confirm_password" required maxlength="100" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" title="Password must be at least 8 characters long, include 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character." value="{{ user.confirm_password }}" /></td>
+                </tr>
+                <tr>
+                    <td><label for="id_mail_id">User Email:</label></td>
+                    <td><input type="email" name="mail_id" id="id_mail_id" required maxlength="254" value="{{ user.mail_id }}" pattern="^[a-zA-Z0-9._%+-]+@klu\.in$" title="Email must end with @klu.in" /></td>
+                </tr>
+                <tr>
+                    <td><label for="id_first_name">User FirstName:</label></td>
+                    <td><input type="text" name="first_name" id="id_first_name" required maxlength="100" value="{{ user.first_name }}" /></td>
+                </tr>
+                <tr>
+                    <td><label for="id_last_name">User LastName:</label></td>
+                    <td><input type="text" name="last_name" id="id_last_name" required maxlength="100" value="{{ user.last_name }}" /></td>
+                </tr>
+                <tr>
+                    <td><label for="id_phone_number">User Contact:</label></td>
+                    <td><input type="text" name="phone_number" id="id_phone_number" required maxlength="15" value="{{ user.phone_number }}" /></td>
+                </tr>
+                <tr>
+                    <td><label for="id_role">Role:</label></td>
+                    <td>
+                        <div class="checkbox-wrapper">
+                            <label>{{ form.role }}</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button type="submit" class="btn btn-success">Update</button></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>

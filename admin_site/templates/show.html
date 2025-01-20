@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Records</title>
+    {% load static %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h3 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table thead {
+            background-color: #007bff;
+            color: white;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        table tbody tr:hover {
+            background-color: #e9f7fe;
+        }
+
+        .actions a {
+            margin-right: 10px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .actions a[href^="/delete/"] {
+            color: red;
+        }
+
+        .actions a[href^="/delete/"]:hover {
+            text-decoration: underline;
+            color: darkred;
+        }
+
+        .actions a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            table th, table td {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .btn-primary {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h3>User Records</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Employee ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Contact</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.mail_id }}</td>
+                <td>{{ user.first_name }}</td>
+                <td>{{ user.last_name }}</td>
+                <td>{{ user.phone_number }}</td>
+                <td>
+                    {% if user.role %}
+                        {% if user.role == "Admin" %}
+                            Admin
+                        {% endif %}
+                        {% if user.role == "User" %}
+                            User
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td class="actions">
+                    <a href="/edit/{{ user.id }}">Edit</a>
+                    <a href="/delete/{{ user.id }}">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <center>
+        <a href="/emp" class="btn-primary">Add New Record</a>
+    </center>
+</div>
+</body>
+</html>
