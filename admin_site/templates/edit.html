@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User Details</title>
     {% load static %}
 
     <style>
-        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -31,24 +31,23 @@
             margin-bottom: 20px;
         }
 
-        /* Table Layout */
-        table.form-table {
+        .form-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        table.form-table td {
+        .form-table td {
             padding: 10px;
             vertical-align: middle;
         }
 
-        table.form-table td label {
+        .form-table td label {
             font-weight: bold;
             display: block;
             margin-bottom: 5px;
         }
 
-        table.form-table input {
+        .form-table input, .form-table select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
@@ -56,14 +55,13 @@
             font-size: 16px;
         }
 
-        table.form-table input:focus {
+        .form-table input:focus, .form-table select:focus {
             outline: none;
             border-color: #66afe9;
             box-shadow: 0 0 8px rgba(0, 0, 255, 0.2);
         }
 
-        /* Button */
-        button.btn-success {
+        .btn-success {
             background-color: #4CAF50;
             color: white;
             padding: 10px 20px;
@@ -73,66 +71,152 @@
             cursor: pointer;
         }
 
-        button.btn-success:hover {
+        .btn-success:hover {
             background-color: #45a049;
         }
 
-        /* Checkbox Layout */
-        .checkbox-wrapper {
-            display: flex;
-            gap: 20px;
-        }
-
-        .checkbox-wrapper input[type="checkbox"] {
-            margin-right: 5px;
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: block;
         }
     </style>
+
+    <script>
+        function validateForm() {
+            const form = document.getElementById('updateForm');
+            const password = form.querySelector('#id_password').value;
+            const confirmPassword = form.querySelector('#id_confirm_password').value;
+            const email = form.querySelector('#id_mail_id').value;
+            const phone = form.querySelector('#id_phone_number').value;
+
+            let isValid = true;
+
+            // Clear previous error messages
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+            // Email validation (@klu.in)
+            if (!email.endsWith('@klu.in')) {
+                document.getElementById('email-error').textContent = 'Email must end with @klu.in';
+                isValid = false;
+            }
+
+            // Password validation
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordRegex.test(password)) {
+                document.getElementById('password-error').textContent =
+                    'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character';
+                isValid = false;
+            }
+
+            // Confirm password
+            if (password !== confirmPassword) {
+                document.getElementById('confirm-password-error').textContent = 'Passwords do not match';
+                isValid = false;
+            }
+
+            // Phone number validation
+            const phoneRegex = /^\d{10}$/;
+            if (!phoneRegex.test(phone)) {
+                document.getElementById('phone-error').textContent = 'Please enter a valid 10-digit phone number';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+    </script>
 </head>
 <body>
     <div class="container">
-        <h3 class="form-title">Update Details</h3>
-        <form method="POST" class="post-form" action="/update/{{ user.id }}">
+        <h3 class="form-title">Edit User Details</h3>
+        <form id="updateForm" method="POST" action="/update/{{ user.id }}" onsubmit="return validateForm()">
             {% csrf_token %}
             <table class="form-table">
                 <tr>
                     <td><label for="id_username">Username:</label></td>
-                    <td><input type="text" name="username" id="id_username" required maxlength="100" value="{{ user.username }}" /></td>
-                </tr>
-                <tr>
-                    <td><label for="id_password">User Password:</label></td>
-                    <td><input type="password" name="password" id="id_password" required maxlength="100" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" title="Password must be at least 8 characters long, include 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character." value="{{ user.password }}" /></td>
-                </tr>
-                <tr>
-                    <td><label for="id_confirm_password">User Confirm Password:</label></td>
-                    <td><input type="password" name="confirm_password" id="id_confirm_password" required maxlength="100" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" title="Password must be at least 8 characters long, include 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character." value="{{ user.confirm_password }}" /></td>
-                </tr>
-                <tr>
-                    <td><label for="id_mail_id">User Email:</label></td>
-                    <td><input type="email" name="mail_id" id="id_mail_id" required maxlength="254" value="{{ user.mail_id }}" pattern="^[a-zA-Z0-9._%+-]+@klu\.in$" title="Email must end with @klu.in" /></td>
-                </tr>
-                <tr>
-                    <td><label for="id_first_name">User FirstName:</label></td>
-                    <td><input type="text" name="first_name" id="id_first_name" required maxlength="100" value="{{ user.first_name }}" /></td>
-                </tr>
-                <tr>
-                    <td><label for="id_last_name">User LastName:</label></td>
-                    <td><input type="text" name="last_name" id="id_last_name" required maxlength="100" value="{{ user.last_name }}" /></td>
-                </tr>
-                <tr>
-                    <td><label for="id_phone_number">User Contact:</label></td>
-                    <td><input type="text" name="phone_number" id="id_phone_number" required maxlength="15" value="{{ user.phone_number }}" /></td>
-                </tr>
-                <tr>
-                    <td><label for="id_role">Role:</label></td>
                     <td>
-                        <div class="checkbox-wrapper">
-                            <label>{{ form.role }}</label>
-                        </div>
+                        <input type="text" id="id_username" name="username" value="{{ user.username }}" required>
+                        {% if form.username.errors %}
+                            <span class="error-message">{{ form.username.errors.0 }}</span>
+                        {% endif %}
                     </td>
                 </tr>
                 <tr>
+                    <td><label for="id_password">Password:</label></td>
+                    <td>
+                        <input type="password" id="id_password" name="password" required>
+                        <span id="password-error" class="error-message"></span>
+                        {% if form.password.errors %}
+                            <span class="error-message">{{ form.password.errors.0 }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="id_confirm_password">Confirm Password:</label></td>
+                    <td>
+                        <input type="password" id="id_confirm_password" name="confirm_password" required>
+                        <span id="confirm-password-error" class="error-message"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="id_mail_id">Email:</label></td>
+                    <td>
+                        <input type="email" id="id_mail_id" name="mail_id" value="{{ user.mail_id }}" required>
+                        <span id="email-error" class="error-message"></span>
+                        {% if form.mail_id.errors %}
+                            <span class="error-message">{{ form.mail_id.errors.0 }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="id_first_name">First Name:</label></td>
+                    <td>
+                        <input type="text" id="id_first_name" name="first_name" value="{{ user.first_name }}" required>
+                        {% if form.first_name.errors %}
+                            <span class="error-message">{{ form.first_name.errors.0 }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="id_last_name">Last Name:</label></td>
+                    <td>
+                        <input type="text" id="id_last_name" name="last_name" value="{{ user.last_name }}" required>
+                        {% if form.last_name.errors %}
+                            <span class="error-message">{{ form.last_name.errors.0 }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="id_phone_number">Phone Number:</label></td>
+                    <td>
+                        <input type="text" id="id_phone_number" name="phone_number" value="{{ user.phone_number }}" required>
+                        <span id="phone-error" class="error-message"></span>
+                        {% if form.phone_number.errors %}
+                            <span class="error-message">{{ form.phone_number.errors.0 }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+    <td><label for="id_roles">Role:</label></td>
+    <td>
+        <div>
+            <input type="checkbox" id="role_user" name="roles" value="User" {% if 'User' in user.roles %}checked{% endif %}>
+            <label for="role_user">User</label>
+        </div>
+        <div>
+            <input type="checkbox" id="role_admin" name="roles" value="Admin" {% if 'Admin' in user.roles %}checked{% endif %}>
+            <label for="role_admin">Admin</label>
+        </div>
+        {% if form.roles.errors %}
+            <span class="error-message">{{ form.roles.errors.0 }}</span>
+        {% endif %}
+    </td>
+</tr>
+
+                <tr>
                     <td></td>
-                    <td><button type="submit" class="btn btn-success">Update</button></td>
+                    <td><button type="submit" class="btn-success">Update</button></td>
                 </tr>
             </table>
         </form>

@@ -1,0 +1,22 @@
+from django.db import models
+
+
+class User(models.Model):
+    # Define the choices for the role
+    ROLE_CHOICES = [
+        ('Admin', 'Admin'),
+        ('User', 'User'),
+    ]
+
+    id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=50, unique=True)
+    password = models.CharField(max_length=128)
+    confirm_password = models.CharField(max_length=128)
+    mail_id = models.EmailField(unique=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=15, unique=True)
+    roles = models.CharField(max_length=10, choices=ROLE_CHOICES, default='User')
+
+    class Meta:
+        db_table = "user"
