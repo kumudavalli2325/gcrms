@@ -16,7 +16,7 @@ class User(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=15, unique=True)
-    roles = models.CharField(max_length=10, choices=ROLE_CHOICES, default='User')
+    roles = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         db_table = "user"

@@ -198,21 +198,21 @@
                     </td>
                 </tr>
                 <tr>
-    <td><label for="id_roles">Role:</label></td>
-    <td>
-        <div>
-            <input type="checkbox" id="role_user" name="roles" value="User" {% if 'User' in user.roles %}checked{% endif %}>
-            <label for="role_user">User</label>
-        </div>
-        <div>
-            <input type="checkbox" id="role_admin" name="roles" value="Admin" {% if 'Admin' in user.roles %}checked{% endif %}>
-            <label for="role_admin">Admin</label>
-        </div>
-        {% if form.roles.errors %}
-            <span class="error-message">{{ form.roles.errors.0 }}</span>
-        {% endif %}
-    </td>
-</tr>
+                    <td><label for="id_roles">Role:</label></td>
+                    <td>
+                        <div>
+                            <input type="checkbox" id="role_user" name="roles" value="User" {% if 'User' in user.roles %}checked{% endif %}>
+                            <label for="role_user">User</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="role_admin" name="roles" value="Admin" {% if 'Admin' in user.roles %}checked{% endif %}>
+                            <label for="role_admin">Admin</label>
+                        </div>
+                        {% if form.roles.errors %}
+                            <span class="error-message">{{ form.roles.errors.0 }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
 
                 <tr>
                     <td></td>

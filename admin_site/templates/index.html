@@ -229,8 +229,9 @@
                     <td><label for="roles" class="required">Roles:</label></td>
                     <td>
                         <div class="checkbox-group">
-                            <label><input type="checkbox" name="roles" value="User" {% if form.roles.value == 'User' %}checked{% endif %}> User</label>
-                            <label><input type="checkbox" name="roles" value="Admin" {% if form.roles.value == 'Admin' %}checked{% endif %}> Admin</label>
+                            <label for="roles">Roles:</label><br>
+                                <input type="checkbox" name="roles" value="Admin"> Admin<br>
+                                <input type="checkbox" name="roles" value="User" checked> User<br>
                         </div>
                         {% if form.roles.errors %}
                         <div class="error-message" style="display: block;">{{ form.roles.errors }}</div>
