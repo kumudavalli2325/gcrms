@@ -29,11 +29,13 @@ from admin_site import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('emp', views.user),
-    path('show',views.show),
+    path('show',views.show,name = 'show'),
     path('edit/<int:id>', views.edit),
     path('update/<int:id>', views.update),
     path('delete/<int:id>', views.destroy),
-    path('login/', views.login_view, name='login'),
+    path('register/', views.register, name='register'),
+    path('login/', views.login_user, name='login'),  # Changed to login_user
+    path('logout/', views.logout_user, name='logout'),
 
 
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit User Details</title>
-    <link rel="icon" type="image/x-icon" href="/admin_site/static/images/KL.png">
+    <link rel="icon" type="image/x-icon" href="/admin_site/static/images/VATION.png">
     {% load static %}
 
     <style>
@@ -91,11 +91,19 @@
             const confirmPassword = form.querySelector('#id_confirm_password').value;
             const email = form.querySelector('#id_mail_id').value;
             const phone = form.querySelector('#id_phone_number').value;
+            const username = form.querySelector('#id_username').value;
 
             let isValid = true;
 
             // Clear previous error messages
             document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+            // Username validation (must have at least 1 capital letter, 1 number, and 1 hyphen)
+            const usernameRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[-]).{1,}$/;
+            if (!usernameRegex.test(username)) {
+                document.getElementById('username-error').textContent = 'Username must contain at least one capital letter, one number, and one hyphen';
+                isValid = false;
+            }
 
             // Email validation (@klu.in)
             if (!email.endsWith('@klu.in')) {
@@ -130,7 +138,7 @@
 </head>
 <body>
     <div>
-            <img src="/admin_site/static/images/logo.png" alt="Logo" style="width: 80px;height: auto"/>
+            <img src="/admin_site/static/images/LOGO.png" alt="Logo" style="width: 80px;height: auto"/>
     </div>
     <div class="container">
         <h3 class="form-title">Edit User Details</h3>
@@ -141,6 +149,7 @@
                     <td><label for="id_username">Username:</label></td>
                     <td>
                         <input type="text" id="id_username" name="username" value="{{ user.username }}" required>
+                        <span id="username-error" class="error-message"></span>
                         {% if form.username.errors %}
                             <span class="error-message">{{ form.username.errors.0 }}</span>
                         {% endif %}
