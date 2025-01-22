@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index Page</title>
+    <title>Create User</title>
+    <link rel="icon" type="image/x-icon" href="/admin_site/static/images/KL.png">
     <link rel="stylesheet" href="{% static 'styles.css' %}">
     <style>
         body {
@@ -16,7 +17,6 @@
         .header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             background-color: #fff;
             padding: 10px 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -24,13 +24,31 @@
         .header-left {
             display: flex;
             align-items: center;
+            flex-direction: column;
         }
         .header-left img {
-            height: 50px;
-            margin-left: 20px;
+            height: 200px;
+            margin-bottom: 10px;
         }
         .header-left .date-time {
+            font-size: 16px;
+            color: #555;
+        }
+        .title-date {
+            display: flex;
+            align-items: center;
             margin-left: 20px;
+        }
+        .title-date img {
+            height: 100px;
+            margin-right: 15px;
+        }
+        .title-date h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .title-date .date-time {
             font-size: 14px;
             color: #555;
         }
@@ -104,10 +122,16 @@
             display: flex;
             flex-direction: column;
         }
+        #password-requirements {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
     </style>
     <script>
         function updateDateTime() {
             const dateTimeElement = document.getElementById('date-time');
+            const currentTimeElement = document.getElementById('current-time');
             const now = new Date();
             const options = {
                 timeZone: 'Asia/Kolkata',
@@ -120,45 +144,99 @@
                 minute: '2-digit',
                 second: '2-digit'
             };
+            const timeOptions = {
+                timeZone: 'Asia/Kolkata',
+                hour12: true,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
             dateTimeElement.textContent = new Intl.DateTimeFormat('en-IN', options).format(now);
+            currentTimeElement.textContent = new Intl.DateTimeFormat('en-IN', timeOptions).format(now);
         }
 
-        function validateForm() {
+        setInterval(updateDateTime, 1000);
+
+        // Email validation function
+        function validateEmail() {
             const emailField = document.getElementById('mail_id');
             const emailValue = emailField.value;
             const emailRegex = /^[a-zA-Z0-9._%+-]+@klu\.in$/;
-
+            const emailError = document.getElementById('email-error');
             if (!emailRegex.test(emailValue)) {
-                alert('Email must end with "@klu.in".');
+                emailError.style.display = 'block';
+                return false;
+            } else {
+                emailError.style.display = 'none';
+                return true;
+            }
+        }
+
+        // Password validation function
+        function validatePassword(password) {
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            const passwordError = document.getElementById('password-error');
+            if (!passwordRegex.test(password)) {
+                passwordError.style.display = 'block';
+                return false;
+            } else {
+                passwordError.style.display = 'none';
+                return true;
+            }
+        }
+
+        // Form validation on submit
+        function validateForm() {
+            const emailValid = validateEmail();
+            if (!emailValid) return false;
+
+            const passwordField = document.getElementById('password');
+            const passwordValid = validatePassword(passwordField.value);
+            if (!passwordValid) return false;
+
+            const confirmPasswordField = document.getElementById('confirm_password');
+            if (passwordField.value !== confirmPasswordField.value) {
+                alert("Passwords do not match.");
                 return false;
             }
 
             return true;
         }
 
-        setInterval(updateDateTime, 1000);
+        // Update roles field to store selected roles as comma-separated string
+        function updateRoles() {
+            const roles = [];
+            if (document.getElementById('role_admin').checked) {
+                roles.push("Admin");
+            }
+            if (document.getElementById('role_user').checked) {
+                roles.push("User");
+            }
+            document.getElementById('roles_input').value = roles.join(',');
+        }
+
+        // Add event listeners to update roles before form submission
+        document.getElementById('role_admin').addEventListener('change', updateRoles);
+        document.getElementById('role_user').addEventListener('change', updateRoles);
+
+        // Initialize roles field on page load
+        window.onload = updateRoles;
     </script>
 </head>
 <body>
     <div class="header">
+        <div>
+            <img src="/admin_site/static/images/logo.png" alt="Logo" style="width: 80px;height: auto"/>
+            </div>
         <div class="header-left">
-            <div class="date-time" id="date-time"></div>
-            <img src="https://seekvectors.com/files/download/Kl%20University-04.png" alt="KL University Logo">
+            <div id="current-time" class="date-time"></div>
+        </div>
+                <div class="date-time" id="date-time"></div>
+            </div>
         </div>
     </div>
     <div class="container">
-        <h3 class="form-title">Index Page</h3>
-
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}" style="display: block;">
-                {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
+        <h3 class="form-title">Create User</h3>
         <form method="POST" class="post-form" onsubmit="return validateForm()">
             {% csrf_token %}
             <table class="form-table">
@@ -167,7 +245,7 @@
                     <td>
                         <input type="text" name="username" id="username" required maxlength="50" value="{{ form.username.value|default:'' }}">
                         {% if form.username.errors %}
-                        <div class="error-message" style="display: block;">{{ form.username.errors }}</div>
+                        <div class="error-message">{{ form.username.errors }}</div>
                         {% endif %}
                     </td>
                 </tr>
@@ -175,67 +253,53 @@
                     <td><label for="password" class="required">Password:</label></td>
                     <td>
                         <input type="password" name="password" id="password" required maxlength="100">
-                        {% if form.password.errors %}
-                        <div class="error-message" style="display: block;">{{ form.password.errors }}</div>
-                        {% endif %}
+                        <div id="password-error" class="error-message" style="display: none;">
+                            Password must include at least 8 characters, 1 uppercase, 1 lowercase, 1 special character, and 1 number.
+                        </div>
                     </td>
                 </tr>
                 <tr>
                     <td><label for="confirm_password" class="required">Confirm Password:</label></td>
                     <td>
                         <input type="password" name="confirm_password" id="confirm_password" required maxlength="100">
-                        {% if form.confirm_password.errors %}
-                        <div class="error-message" style="display: block;">{{ form.confirm_password.errors }}</div>
-                        {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <td><label for="mail_id" class="required">Email:</label></td>
                     <td>
                         <input type="email" name="mail_id" id="mail_id" required maxlength="100" value="{{ form.mail_id.value|default:'' }}">
-                        {% if form.mail_id.errors %}
-                        <div class="error-message" style="display: block;">{{ form.mail_id.errors }}</div>
-                        {% endif %}
+                        <div id="email-error" class="error-message" style="display: none;">
+                            Email must end with "@klu.in".
+                        </div>
                     </td>
                 </tr>
                 <tr>
                     <td><label for="first_name" class="required">First Name:</label></td>
                     <td>
                         <input type="text" name="first_name" id="first_name" required maxlength="100" value="{{ form.first_name.value|default:'' }}">
-                        {% if form.first_name.errors %}
-                        <div class="error-message" style="display: block;">{{ form.first_name.errors }}</div>
-                        {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <td><label for="last_name" class="required">Last Name:</label></td>
                     <td>
                         <input type="text" name="last_name" id="last_name" required maxlength="100" value="{{ form.last_name.value|default:'' }}">
-                        {% if form.last_name.errors %}
-                        <div class="error-message" style="display: block;">{{ form.last_name.errors }}</div>
-                        {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <td><label for="phone_number" class="required">Contact:</label></td>
                     <td>
                         <input type="text" name="phone_number" id="phone_number" required maxlength="15" value="{{ form.phone_number.value|default:'' }}">
-                        {% if form.phone_number.errors %}
-                        <div class="error-message" style="display: block;">{{ form.phone_number.errors }}</div>
-                        {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <td><label for="roles" class="required">Roles:</label></td>
                     <td>
                         <div class="checkbox-group">
-                            <label for="roles">Roles:</label><br>
-                                <input type="checkbox" name="roles" value="Admin"> Admin<br>
-                                <input type="checkbox" name="roles" value="User" checked> User<br>
+                            <input type="checkbox" name="roles" id="role_admin" value="Admin"> Admin<br>
+                            <input type="checkbox" name="roles" id="role_user" value="User" checked> User<br>
                         </div>
-                        {% if form.roles.errors %}
-                        <div class="error-message" style="display: block;">{{ form.roles.errors }}</div>
-                        {% endif %}
+                        <!-- Hidden input to store the roles -->
+                        <input type="hidden" name="roles_input" id="roles_input" value="">
                     </td>
                 </tr>
                 <tr>
@@ -245,5 +309,3 @@
             </table>
         </form>
     </div>
-</body>
-</html>

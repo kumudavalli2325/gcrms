@@ -18,5 +18,18 @@ class User(models.Model):
     phone_number = models.CharField(max_length=15, unique=True)
     roles = models.CharField(max_length=255, blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        # Automatically enforce roles validity and other logic
+        if self.password != self.confirm_password:
+            raise ValueError("Password and Confirm Password do not match.")
+        super(User, self).save(*args, **kwargs)
+
     class Meta:
         db_table = "user"
+
+
+
+
+
+
+

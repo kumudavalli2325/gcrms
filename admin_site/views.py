@@ -2,7 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserForm
 from .models import User
+from django.contrib.auth import authenticate, login
 
+
+
+# Existing views for managing users
 
 def user(request):
     if request.method == "POST":
@@ -66,3 +70,16 @@ def destroy(request, id):
     user.delete()
     messages.success(request, 'User deleted successfully!')
     return redirect("/show")
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')  # Replace 'home' with your home page view name
+        else:
+            messages.error(request, 'Invalid username or password')
+    return render(request, 'login.html')

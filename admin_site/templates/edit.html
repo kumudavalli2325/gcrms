@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit User Details</title>
+    <link rel="icon" type="image/x-icon" href="/admin_site/static/images/KL.png">
     {% load static %}
 
     <style>
@@ -128,6 +129,9 @@
     </script>
 </head>
 <body>
+    <div>
+            <img src="/admin_site/static/images/logo.png" alt="Logo" style="width: 80px;height: auto"/>
+    </div>
     <div class="container">
         <h3 class="form-title">Edit User Details</h3>
         <form id="updateForm" method="POST" action="/update/{{ user.id }}" onsubmit="return validateForm()">
