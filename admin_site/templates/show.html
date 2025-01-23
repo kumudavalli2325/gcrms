@@ -89,6 +89,68 @@
             background-color: #0056b3;
         }
 
+        .date-time {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 12px; /* Reduced font size */
+            font-weight: normal; /* Adjusted weight */
+            color: #555;
+        }
+
+        .avatar-container {
+            position: absolute;
+            top: 30px; /* Positioned below the date-time */
+            right: 20px;
+            text-align: center;
+        }
+
+        .avatar {
+            width: 50px; /* Reduced avatar size */
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            margin-top: 5px; /* Added spacing */
+        }
+
+        .avatar:hover {
+            background-color: #0056b3;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            width: 150px;
+            text-align: left;
+            z-index: 1000;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 8px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+            font-size: 12px; /* Adjusted font size */
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f2f2f2;
+        }
+
+        .dropdown-menu a:last-child {
+            border-bottom: none;
+        }
+
+        .avatar-container:hover .dropdown-menu {
+            display: block; /* Show the menu when hovered */
+        }
+
         @media (max-width: 768px) {
             table th, table td {
                 font-size: 14px;
@@ -99,17 +161,49 @@
                 font-size: 14px;
                 padding: 8px 16px;
             }
-        }
 
+            .date-time {
+                font-size: 12px;
+            }
+
+            .avatar-container {
+                top: 50px;
+            }
+        }
     </style>
 
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('dateTime').textContent = now.toLocaleString('en-US', options);
+        }
+
+        setInterval(updateDateTime, 1000); // Update every second
+    </script>
 </head>
 <body>
 <div>
-            <img src="/admin_site/static/images/LOGO.png" alt="Logo" style="width: 80px;height: auto"/>
-            </div>
+    <img src="/admin_site/static/images/LOGO.png" alt="Logo" style="width: 100px; height: auto;">
+    <div class="date-time" id="dateTime"></div>
+    <div class="avatar-container">
+        <img src="/admin_site/static/images/avatar.jpg" alt="User Avatar" class="avatar" >
+        <div class="dropdown-menu">
+            <a href="{% url 'change_password' %}">Change Password</a>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </div>
+    </div>
+</div>
 <div class="container">
     <h3>User Records</h3>
+
     <table>
         <thead>
             <tr>
@@ -133,7 +227,13 @@
                 <td>{{ user.last_name }}</td>
                 <td>{{ user.phone_number }}</td>
                 <td>
-                   {{ user.roles }}
+                    {% if user.roles %}
+                        {% for role in user.get_roles %}
+                            {{ role }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        No roles assigned
+                    {% endif %}
                 </td>
                 <td class="actions">
                     <a href="/edit/{{ user.id }}">Edit</a>
@@ -143,7 +243,6 @@
         {% endfor %}
         </tbody>
     </table>
-
     <center>
         <a href="/emp" class="btn-primary">Add New Record</a>
     </center>

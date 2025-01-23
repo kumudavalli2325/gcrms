@@ -1,165 +1,178 @@
-from django.contrib.auth.hashers import make_password,check_password
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UserForm
+from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth import authenticate, login, logout
 from .models import User
-from .models import Login
-from django.http import HttpResponse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import logout
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+# def user(request):
+#     if request.method == "POST":
+#         try:
+#             if request.POST['password'] != request.POST['confirm_password']:
+#                 messages.error(request, 'Passwords do not match!')
+#                 return render(request, 'index.html')
+#
+#             roles = request.POST.getlist('roles')
+#
+#             user = User(
+#                 username=request.POST['username'],
+#                 password=make_password(request.POST['password']),
+#                 confirm_password=make_password(request.POST['confirm_password']),
+#                 mail_id=request.POST['mail_id'],
+#                 first_name=request.POST['first_name'],
+#                 last_name=request.POST['last_name'],
+#                 phone_number=request.POST['phone_number'],
+#                 roles=','.join(roles)
+#             )
+#             user.save()
+#             messages.success(request, 'User added successfully!')
+#             return redirect('/show')
+#         except Exception as e:
+#             messages.error(request, f'Error: {str(e)}')
+#     return render(request, 'index.html')
 
 
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-# Existing views for managing users
+        try:
+            user = User.objects.get(username=username)
+            if check_password(password, user.password):
+                request.session['user_id'] = user.id
+                messages.success(request, 'Login successful!')
+                return redirect('/show')  # Redirect to the "show" page
+            else:
+                messages.error(request, 'Invalid username or password!')
+        except User.DoesNotExist:
+            messages.error(request, 'User does not exist!')
 
-def user(request):
-    if request.method == "POST":
-        form = UserForm(request.POST)
-        if form.is_valid():
-            try:
-                # Create user object but don't save yet
-                user = form.save(commit=False)
-                # Remove confirm_password as it's not in the model
-                user.save()
-                messages.success(request, 'User registered successfully!')
-                return redirect('/show')
-            except Exception as e:
-                messages.error(request, f'Error registering user: {str(e)}')
-        else:
-            messages.error(request, 'Please correct the errors below.')
-    else:
-        form = UserForm()
-    return render(request, 'index.html', {'form': form})
+    return render(request, 'login.html')
 
+
+def logout_view(request):
+    if 'user_id' in request.session:
+        del request.session['user_id']
+    messages.success(request, 'Logged out successfully!')
+    return redirect('/login')
+
+def logout_view(request):
+    logout(request)  # This will log the user out
+    return redirect('login')
 
 def show(request):
-    # Get all users
     users = User.objects.all()
     return render(request, "show.html", {'users': users})
 
 
 def edit(request, id):
+    if 'user_id' not in request.session:
+        messages.error(request, 'Please log in first!')
+        return redirect('/login')
+
     user = User.objects.get(id=id)
-    form = UserForm(instance=user)
+    return render(request, 'edit.html', {'user': user})
 
-    # Get the current roles assigned to the user
-    selected_roles = user.roles.split(',') if user.roles else []
-
-    return render(request, 'edit.html', {'user': user, 'form': form, 'selected_roles': selected_roles})
-
-
-def update(request, id):
-    user = User.objects.get(id=id)
-    if request.method == 'POST':
-        form = UserForm(request.POST, instance=user)
-        if form.is_valid():
-            # Save the form data
-            updated_user = form.save(commit=False)
-            roles = request.POST.getlist('roles')  # Get the selected roles from the checkboxes
-
-            # Save roles as a comma-separated string
-            updated_user.roles = ','.join(roles)
-            updated_user.save()
-
-            messages.success(request, 'User updated successfully!')
-            return redirect("/show")
-        messages.error(request, 'Please correct the errors below.')
-
-    form = UserForm(instance=user)
-    return render(request, 'edit.html', {'user': user, 'form': form})
+#
+# def update(request, id):
+#     if 'user_id' not in request.session:
+#         messages.error(request, 'Please log in first!')
+#         return redirect('/login')
+#
+#     user = User.objects.get(id=id)
+#     if request.method == 'POST':
+#         try:
+#             user.username = request.POST['username']
+#             if request.POST.get('password'):
+#                 user.password = make_password(request.POST['password'])
+#                 user.confirm_password = make_password(request.POST['password'])
+#             user.mail_id = request.POST['mail_id']
+#             user.first_name = request.POST['first_name']
+#             user.last_name = request.POST['last_name']
+#             user.phone_number = request.POST['phone_number']
+#             user.save()
+#             messages.success(request, 'User updated successfully!')
+#             return redirect("/show")
+#         except Exception as e:
+#             messages.error(request, f'Error: {str(e)}')
+#     return render(request, 'edit.html', {'user': user})
 
 
 def destroy(request, id):
+    if 'user_id' not in request.session:
+        messages.error(request, 'Please log in first!')
+        return redirect('/login')
+
     user = User.objects.get(id=id)
     user.delete()
     messages.success(request, 'User deleted successfully!')
     return redirect("/show")
 
 
-# def login_view(request):
-#     if request.method == 'POST':
-#         username = request.POST['username']
-#         password = request.POST['password']
-#         user = authenticate(request, username=username, password=password)
-#         if user is not None:
-#             login(request, user)
-#             return redirect('home')  # Replace 'home' with your home page view name
-#         else:
-#             messages.error(request, 'Invalid username or password')
-#     return render(request, 'login.html')
-
-def register(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        mail_id = request.POST.get('mail_id')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-
-        # Basic validation
-        if not all([username, mail_id, password, confirm_password]):
-            messages.error(request, 'All fields are required')
-            return redirect('register')
-
-        # Check if username or email already exists
-        if Login.objects.filter(username=username).exists():
-            messages.error(request, 'Username already exists')
-            return redirect('register')
-
-        if Login.objects.filter(mail_id=mail_id).exists():
-            messages.error(request, 'Email already exists')
-            return redirect('register')
-
-        # Password validation
-        if password != confirm_password:
-            messages.error(request, 'Passwords do not match')
-            return redirect('register')
-
-        if len(password) < 8:
-            messages.error(request, 'Password must be at least 8 characters long')
-            return redirect('register')
-
+def user(request):
+    if request.method == "POST":
         try:
-            # Create new user with hashed password
-            hashed_password = make_password(password)
-            Login.objects.create(
-                username=username,
-                mail_id=mail_id,
-                password=hashed_password,
-                confirm_password=hashed_password
+            if request.POST['password'] != request.POST['confirm_password']:
+                messages.error(request, 'Passwords do not match!')
+                return render(request, 'index.html')
+
+            roles = request.POST.getlist('roles')
+            user = User(
+                username=request.POST['username'],
+                password=make_password(request.POST['password']),
+                confirm_password=make_password(request.POST['confirm_password']),
+                mail_id=request.POST['mail_id'],
+                first_name=request.POST['first_name'],
+                last_name=request.POST['last_name'],
+                phone_number=request.POST['phone_number'],
+                roles=','.join(roles)
             )
-            messages.success(request, 'Registration successful! Please login.')
-            return redirect('login')
-
+            user.save()
+            messages.success(request, 'User added successfully!')
+            return redirect('/show')
         except Exception as e:
-            messages.error(request, f'Registration failed: {str(e)}')
-            return redirect('register')
-
-    return render(request, 'registration.html')
+            messages.error(request, f'Error: {str(e)}')
+    return render(request, 'index.html')
 
 
-def login_user(request):
+def update(request, id):
+    user = User.objects.get(id=id)
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
         try:
-            # Try to get user with the provided username
-            user = Login.objects.get(username=username)
-            # Check if password matches
-            if check_password(password, user.password):
-                # Set basic session data and redirect to show page
-                request.session['user_id'] = user.id
-                return redirect('show')
-            else:
-                messages.error(request, 'Invalid credentials')
-                return redirect('login')
-        except Login.DoesNotExist:
-            messages.error(request, 'Invalid credentials')
-            return redirect('login')
+            # Update all fields
+            user.username = request.POST['username']
+            user.mail_id = request.POST['mail_id']
+            user.first_name = request.POST['first_name']
+            user.last_name = request.POST['last_name']
+            user.phone_number = request.POST['phone_number']
 
-    return render(request, 'login.html')
+            # Update roles
+            roles = request.POST.getlist('roles')
+            user.roles = ','.join(roles)
 
+            # Optional: Update password if provided
+            if request.POST.get('password'):
+                user.password = make_password(request.POST['password'])
+                user.confirm_password = make_password(request.POST['password'])
 
-def logout_user(request):  # Added logout functionality
-    request.session.flush()
-    messages.success(request, 'Logged out successfully')
-    return redirect('login')
+            user.save()
+            messages.success(request, 'User updated successfully!')
+            return redirect("/show")
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
+    return render(request, 'edit.html', {'user': user})
+
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Keeps the user logged in after changing the password
+            return render(request, 'change_password.html', {'password_changed': True})
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'change_password.html', {'form': form, 'password_changed': False})
+

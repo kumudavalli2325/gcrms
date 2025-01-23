@@ -1,5 +1,5 @@
 from django import forms
-from admin_site.models import User,Login
+from admin_site.models import User
 
 class UserForm(forms.ModelForm):
 
@@ -7,11 +7,11 @@ class UserForm(forms.ModelForm):
         model = User
         fields = "__all__"
 
-class LoginForm(forms.ModelForm):
-
-    class Meta:
-        model = Login
-        fields = "__all__"
+# class LoginForm(forms.ModelForm):
+#
+#     class Meta:
+#         model = Login
+#         fields = "__all__"
 
 
 

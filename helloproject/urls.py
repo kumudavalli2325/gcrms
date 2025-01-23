@@ -27,16 +27,20 @@ from django.contrib import admin
 from django.urls import path
 from admin_site import views
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('emp', views.user),
-    path('show',views.show,name = 'show'),
-    path('edit/<int:id>', views.edit),
-    path('update/<int:id>', views.update),
-    path('delete/<int:id>', views.destroy),
-    path('register/', views.register, name='register'),
-    path('login/', views.login_user, name='login'),  # Changed to login_user
-    path('logout/', views.logout_user, name='logout'),
+    # path('admin/', admin.site.urls),
+    # path('', views.user),
+    # path('show',views.show,name = 'show'),
+     path('edit/<int:id>', views.edit),
+     path('update/<int:id>', views.update),
+     path('delete/<int:id>', views.destroy),
 
-
+    path('emp', views.user, name='user'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('show', views.show, name='show'),
+    #path('edit/<int:id>/', views.edit, name='edit'),
+    path('update/<int:id>/', views.update, name='update'),
+    #path('destroy/<int:id>/', views.destroy, name='destroy'),
+    path('change_password/', views.change_password, name='change_password'),
 
 ]
