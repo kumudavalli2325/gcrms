@@ -6,6 +6,7 @@ from .models import User
 from django.contrib.auth import logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
+
 # def user(request):
 #     if request.method == "POST":
 #         try:
@@ -57,6 +58,33 @@ def logout_view(request):
         del request.session['user_id']
     messages.success(request, 'Logged out successfully!')
     return redirect('/login')
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        try:
+            # Fetch the user by username
+            user = User.objects.get(username=username)
+
+            # Check password validity
+            if check_password(password, user.password):
+                # Check if the user has the 'Admin' role
+                roles = user.roles.split(",") if user.roles else []
+                if 'Admin' in roles:
+                    # Set session and login the user
+                    request.session['user_id'] = user.id
+                    messages.success(request, 'Login successful!')
+                    return redirect('/show')  # Redirect to the "show" page
+                else:
+                    messages.error(request, 'Access restricted! Only Admins can log in.')
+            else:
+                messages.error(request, 'Invalid username or password!')
+        except User.DoesNotExist:
+            messages.error(request, 'User does not exist!')
+
+    return render(request, 'login.html')
 
 def logout_view(request):
     logout(request)  # This will log the user out
@@ -154,8 +182,8 @@ def update(request, id):
 
             # Optional: Update password if provided
             if request.POST.get('password'):
-                user.password = make_password(request.POST['password'])
-                user.confirm_password = make_password(request.POST['password'])
+                user.password = change_password(request.POST['password'])
+                user.confirm_password = change_password(request.POST['password'])
 
             user.save()
             messages.success(request, 'User updated successfully!')
@@ -164,7 +192,9 @@ def update(request, id):
             messages.error(request, f'Error: {str(e)}')
     return render(request, 'edit.html', {'user': user})
 
-def change_password(request):
+
+
+def change_password(request ):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
@@ -175,4 +205,29 @@ def change_password(request):
         form = PasswordChangeForm(request.user)
 
     return render(request, 'change_password.html', {'form': form, 'password_changed': False})
+
+def change_password(request, id):
+    """
+    Allows an admin to change a specific user's password.
+    """
+    user = User.objects.get(id=id)
+
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if new_password != confirm_password:
+            messages.error(request, 'Passwords do not match!')
+        else:
+            try:
+                user.password = make_password(new_password)
+                user.save()
+                messages.success(request, 'Password changed successfully!')
+                return redirect('/show')
+            except Exception as e:
+                messages.error(request, f'Error: {str(e)}')
+
+    return render(request, 'change_password.html', {'user': user})
+
+
 

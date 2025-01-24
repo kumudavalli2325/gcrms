@@ -26,6 +26,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from admin_site import views
+
 urlpatterns = [
     # path('admin/', admin.site.urls),
     # path('', views.user),
@@ -42,5 +43,6 @@ urlpatterns = [
     path('update/<int:id>/', views.update, name='update'),
     #path('destroy/<int:id>/', views.destroy, name='destroy'),
     path('change_password/', views.change_password, name='change_password'),
+    path('change_password/<int:id>/', views.change_password, name='change_password')
 
 ]
