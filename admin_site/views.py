@@ -44,7 +44,7 @@ def login_view(request):
             if check_password(password, user.password):
                 request.session['user_id'] = user.id
                 messages.success(request, 'Login successful!')
-                return redirect('/login')  # Redirect to the "show" page
+                return redirect('/show')  # Redirect to the "show" page
             else:
                 messages.error(request, 'Invalid username or password!')
         except User.DoesNotExist:

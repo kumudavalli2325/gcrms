@@ -8,162 +8,168 @@
     {% load static %}
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #fff;
-            padding: 10px 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .header img {
-            width: 80px;
-            height: auto;
-        }
-        .date-time {
-            font-size: 14px;
-            color: #555;
-            position: absolute;
-            top: 10px;
-            right: 20px;
-        }
-        .container {
-            width: 50%;
-            margin: 40px auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .form-title {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .form-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .form-table td {
-            padding: 10px;
-        }
-        .form-table td:first-child {
-            width: 30%;
-        }
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-        .btn-success {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .error-message {
-            color: red;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-        .role-container {
-            display: flex;
-            gap: 15px;
-        }
-        .role-option {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-    </style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+    }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        padding: 10px 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .header img {
+        width: 80px;
+        height: auto;
+    }
+    .date-time {
+        font-size: 14px;
+        color: #555;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+    }
+    .container {
+        width: 50%;
+        margin: 40px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .form-title {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .form-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .form-table td {
+        padding: 10px;
+    }
+    .form-table td:first-child {
+        width: 30%;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+        outline: none;
+        border-color: #007bff;
+    }
+    .btn-success {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .error-message {
+        color: red;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+    .role-container {
+        display: flex;
+        gap: 15px;
+    }
+    .role-option {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+</style>
 
-    <script>
-        function validateForm() {
-            const form = document.getElementById('updateForm');
-            const email = form.querySelector('#id_mail_id').value;
-            const phone = form.querySelector('#id_phone_number').value;
-            const username = form.querySelector('#id_username').value;
-            const firstName = form.querySelector('#id_first_name').value;
-            const lastName = form.querySelector('#id_last_name').value;
-            const rolesChecked = form.querySelectorAll('input[name="roles"]:checked').length;
+<script>
+    function validateForm() {
+        const form = document.getElementById('updateForm');
+        const email = form.querySelector('#id_mail_id').value;
+        const phone = form.querySelector('#id_phone_number').value;
+        const username = form.querySelector('#id_username').value;
+        const firstName = form.querySelector('#id_first_name').value;
+        const lastName = form.querySelector('#id_last_name').value;
+        const rolesChecked = form.querySelectorAll('input[name="roles"]:checked').length;
 
-            let isValid = true;
+        let isValid = true;
 
-            // Clear previous error messages
-            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+        // Clear previous error messages
+        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
 
-            // Username validation
-            if (!/^[a-z\-]+$/.test(username)) {
-                document.getElementById('username-error').textContent = 'Username must contain only lowercase letters and hyphens';
-                isValid = false;
-            }
-
-            // Email validation (@klu.in)
-            if (!email.endsWith('@klu.in')) {
-                document.getElementById('email-error').textContent = 'Email must end with @klu.in';
-                isValid = false;
-            }
-
-            // Phone number validation
-            const phoneRegex = /^\d{10}$/;
-            if (!phoneRegex.test(phone)) {
-                document.getElementById('phone-error').textContent = 'Please enter a valid 10-digit phone number';
-                isValid = false;
-            }
-
-            // First Name and Last Name validation
-            if (firstName.trim() === '') {
-                document.getElementById('first-name-error').textContent = 'First Name is required';
-                isValid = false;
-            }
-
-            if (lastName.trim() === '') {
-                document.getElementById('last-name-error').textContent = 'Last Name is required';
-                isValid = false;
-            }
-
-            // Roles validation
-            if (rolesChecked === 0) {
-                document.getElementById('roles-error').textContent = 'Please select at least one role';
-                isValid = false;
-            }
-
-            return isValid;
+        // Username validation
+        if (!/^[a-z\-]+$/.test(username)) {
+            document.getElementById('username-error').textContent = 'Username must contain only lowercase letters and hyphens';
+            isValid = false;
         }
 
-        function updateDateTime() {
-            const now = new Date();
-            const options = {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            };
-            document.getElementById('dateTime').textContent = now.toLocaleString('en-US', options);
+        // Email validation (@klu.in)
+        if (!email.endsWith('@klu.in')) {
+            document.getElementById('email-error').textContent = 'Email must end with @klu.in';
+            isValid = false;
         }
 
-        setInterval(updateDateTime, 1000);
-    </script>
+        // Phone number validation
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(phone)) {
+            document.getElementById('phone-error').textContent = 'Please enter a valid 10-digit phone number';
+            isValid = false;
+        }
+
+        // First Name and Last Name validation
+        if (firstName.trim() === '') {
+            document.getElementById('first-name-error').textContent = 'First Name is required';
+            isValid = false;
+        }
+
+        if (lastName.trim() === '') {
+            document.getElementById('last-name-error').textContent = 'Last Name is required';
+            isValid = false;
+        }
+
+        // Roles validation
+        if (rolesChecked === 0) {
+            document.getElementById('roles-error').textContent = 'Please select at least one role';
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function updateDateTime() {
+        const now = new Date();
+        const options = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        };
+        document.getElementById('dateTime').textContent = now.toLocaleString('en-US', options);
+    }
+
+    setInterval(updateDateTime, 1000);
+
+    function resetPassword() {
+            // Redirect to the password change page
+            window.location.href = "/reset_password/{{ user.id }}/";  // Adjust the URL to your password change page
+
+    }
+</script>
 </head>
 <body>
     <div>
@@ -172,7 +178,7 @@
     <div class="date-time" id="dateTime"></div>
     <div class="container">
         <h3 class="form-title">Edit User Details</h3>
-        <form id="updateForm" method="POST" action="{% url 'update_user' user.id %}" onsubmit="return validateForm()">
+        <form id="updateForm" method="POST" action="/update/{{ user.id }}" onsubmit="return validateForm()">
             {% csrf_token %}
             <table class="form-table">
                 <tr>
@@ -231,7 +237,7 @@
                 <tr>
                     <td colspan="2" style="text-align: center;">
                         <button type="submit" class="btn-success">Update</button>
-                        <a href="{% url 'reset_password' user.id %}" class="btn-success" style="text-decoration: none;">Reset Password</a>
+                        <button type="button" class="btn-success" onclick="resetPassword()">Reset Password</button>
                     </td>
                 </tr>
             </table>
