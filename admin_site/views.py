@@ -59,6 +59,7 @@ def logout_view(request):
     messages.success(request, 'Logged out successfully!')
     return redirect('/login')
 
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -86,9 +87,11 @@ def login_view(request):
 
     return render(request, 'login.html')
 
+
 def logout_view(request):
     logout(request)  # This will log the user out
     return redirect('login')
+
 
 def show(request):
     users = User.objects.all()
@@ -193,7 +196,6 @@ def update(request, id):
     return render(request, 'edit.html', {'user': user})
 
 
-
 def change_password(request ):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
@@ -205,6 +207,7 @@ def change_password(request ):
         form = PasswordChangeForm(request.user)
 
     return render(request, 'change_password.html', {'form': form, 'password_changed': False})
+
 
 def reset_password(request, id):
     """
