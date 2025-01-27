@@ -44,7 +44,7 @@ def login_view(request):
             if check_password(password, user.password):
                 request.session['user_id'] = user.id
                 messages.success(request, 'Login successful!')
-                return redirect('/show')  # Redirect to the "show" page
+                return redirect('/login')  # Redirect to the "show" page
             else:
                 messages.error(request, 'Invalid username or password!')
         except User.DoesNotExist:
@@ -206,7 +206,7 @@ def change_password(request ):
 
     return render(request, 'change_password.html', {'form': form, 'password_changed': False})
 
-def change_password(request, id):
+def reset_password(request, id):
     """
     Allows an admin to change a specific user's password.
     """
@@ -227,7 +227,7 @@ def change_password(request, id):
             except Exception as e:
                 messages.error(request, f'Error: {str(e)}')
 
-    return render(request, 'change_password.html', {'user': user})
+    return render(request, 'reset_password.html', {'user': user})
 
 
 

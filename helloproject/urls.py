@@ -43,6 +43,7 @@ urlpatterns = [
     path('update/<int:id>/', views.update, name='update'),
     #path('destroy/<int:id>/', views.destroy, name='destroy'),
     path('change_password/', views.change_password, name='change_password'),
-    path('change_password/<int:id>/', views.change_password, name='change_password')
+    path('reset_password/<int:id>/', views.reset_password, name='reset_password'),
+    path('reset_password/', views.reset_password, name='reset_password'),
 
 ]
